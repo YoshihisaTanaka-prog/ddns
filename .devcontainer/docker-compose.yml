@@ -6,6 +6,9 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
+      - ../.docker/dhcp:/workspaces/ddns/.docker/dhcp:cached
+      - ../.docker/dns:/workspaces/ddns/.docker/dns:cached
+      - ../.docker/rails:/workspaces/ddns/.docker/rails:cached
       - ../dhcp:/workspaces/ddns/dhcp:cached
       - ../dns:/workspaces/ddns/dns:cached
       - ../rails:/workspaces/ddns/rails:cached
