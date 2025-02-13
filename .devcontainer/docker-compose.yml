@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ../dhcp:/workspaces/ddns/dhcp:cached
+      - ../dns:/workspaces/ddns/dns:cached
+      - ../rails:/workspaces/ddns/rails:cached
+      - ../.git:/workspaces/ddns/.git:cached
+      - ../.gitignore:/workspaces/ddns/.gitignore:cached
+      - ../docker-compose.yaml:/workspaces/ddns/docker-compose.yaml:cached
+      - ../.devcontainer:/workspaces/ddns/.devcontainer:cached
+      - ../.docker/.root/app:/home/vscode
+    command: sleep infinity
+    networks:
+      - internal_net
+    depends_on:
+      - dns
+      - dhcp
+
+  dns:
+    extends:
+      file: ../docker-compose.yaml
+      service: dns
+    depends_on:
+      - rails
+
+  dhcp:
+    extends:
+      file: ../docker-compose.yaml
+      service: dhcp
+    depends_on:
+      - rails
+
+  rails:
+    extends:
+      file: ../docker-compose.yaml
+      service: rails
+    depends_on:
+      - db
+
+  db:
+    extends:
+      file: ../docker-compose.yaml
+      service: db
+
+networks:
+  internal_net:
+    driver: bridge
+    # internal: true
+
+volumes:
+  db_data:
+    driver: local

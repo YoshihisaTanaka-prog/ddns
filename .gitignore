@@ -1,0 +1,39 @@
+test*
+
+__pycache__
+
+/dhcp/modules
+/dns/modules
+
+
+.env
+node_modules
+
+/.docker/.root
+
+/rails/vendor/bundle
+
+# Ignore bundler and the config.
+/rails/vendor/bundle
+/rails/.bundle
+
+# Ignore all logfiles and tempfiles.
+/rails/log/*
+/rails/tmp/*
+!/rails/log/.keep
+!/rails/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/rails/tmp/pids/*
+!/rails/tmp/pids/
+!/rails/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/rails/storage/*
+!/rails/storage/.keep
+/rails/tmp/storage/*
+!/rails/tmp/storage/
+!/rails/tmp/storage/.keep
+
+# Ignore master key for decrypting credentials and more.
+/rails/config/master.key

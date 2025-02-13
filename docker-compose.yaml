@@ -1,0 +1,67 @@
+services:
+  dns:
+    build: ./.docker/dns
+    container_name: ddns-server-dns
+    volumes:
+      - ./dns:/app
+      - ./.docker/.root/dns:/root
+    ports:
+      - "31500:3000"
+    user: root
+    command: /app/run.sh
+    networks:
+      - internal_net
+    depends_on:
+      - rails
+
+  dhcp:
+    build: ./.docker/dhcp
+    container_name: ddns-server-dhcp
+    volumes:
+      - ./dhcp:/app
+      - ./.docker/.root/dhcp:/root
+    ports:
+      - "31502:3000"
+    user: root
+    command: /app/run.sh
+    networks:
+      - internal_net
+    depends_on:
+      - rails
+
+  rails:
+    build: ./.docker/rails
+    container_name: ddns-server-rails
+    volumes:
+      - ./rails:/app
+      - ./.docker/.root/rails:/root
+    user: root
+    command: /app/run.sh
+    networks:
+      - internal_net
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: development
+
+  db:
+    image: postgres:15
+    container_name: ddns-server-db
+    networks:
+      - internal_net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: myapp_development
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+networks:
+  internal_net:
+    driver: bridge
+    # internal: true
+
+volumes:
+  db_data:
+    driver: local
+    name: ddns_db_data
