@@ -6,6 +6,8 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
+      - ../.env:/workspaces/ddns/.env
+      - ../dotenv-props.txt:/workspaces/ddns/dotenv-props.txt
       - ../.docker/dhcp:/workspaces/ddns/.docker/dhcp:cached
       - ../.docker/dns:/workspaces/ddns/.docker/dns:cached
       - ../.docker/rails:/workspaces/ddns/.docker/rails:cached
@@ -18,6 +20,16 @@ services:
       - ../.devcontainer:/workspaces/ddns/.devcontainer:cached
       - ../.docker/.root/app:/home/vscode
     command: sleep infinity
+    environment:
+      RAILS_ENV: development
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      INNER_IP: ${ROUTER_INNER_IP}
+      OUTER_IP: ${ROUTER_OUTER_IP}
+      ROUTER_IP: ${ROUTER_INNER_IP}
+      NETWORK_IP: ${NETWORK_IP}
+      SUBNET_MASK: ${SUBNET_MASK}
     networks:
       - internal_net
     depends_on:

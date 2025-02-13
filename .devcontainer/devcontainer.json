@@ -14,7 +14,7 @@
         "hridoy.rails-snippets",
         "njpwerner.autodocstring",
         "streetsidesoftware.code-spell-checker",
-        // "tabnine.tabnine-vscode",
+        "tabnine.tabnine-vscode",
         "usernamehw.errorlens"
       ]
     }

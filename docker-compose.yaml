@@ -6,9 +6,15 @@ services:
       - ./dns:/app
       - ./.docker/.root/dns:/root
     ports:
-      - "31500:3000"
+      - "${ROUTER_INNER_IP}:5353:5353"
+      - "${ROUTER_OUTER_IP}:53535:53535"
     user: root
     command: /app/run.sh
+    environment:
+      INNER_IP: ${ROUTER_INNER_IP}
+      OUTER_IP: ${ROUTER_OUTER_IP}
+      NETWORK_IP: ${NETWORK_IP}
+      SUBNET_MASK: ${SUBNET_MASK}
     networks:
       - internal_net
     depends_on:
@@ -21,9 +27,14 @@ services:
       - ./dhcp:/app
       - ./.docker/.root/dhcp:/root
     ports:
-      - "31502:3000"
+      - "${ROUTER_INNER_IP}:6767:6767"
+      - "${ROUTER_OUTER_IP}:6868:6868"
     user: root
     command: /app/run.sh
+    environment:
+      ROUTER_IP: ${ROUTER_INNER_IP}
+      NETWORK_IP: ${NETWORK_IP}
+      SUBNET_MASK: ${SUBNET_MASK}
     networks:
       - internal_net
     depends_on:
@@ -43,6 +54,9 @@ services:
       - db
     environment:
       RAILS_ENV: development
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
 
   db:
     image: postgres:15
@@ -50,9 +64,9 @@ services:
     networks:
       - internal_net
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: myapp_development
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - db_data:/var/lib/postgresql/data
 
