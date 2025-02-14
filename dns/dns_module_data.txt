@@ -1,0 +1,133 @@
+type: DNSRecord {
+  attr: a                type: RR               value: RR.__init__(self: _empty, rname: _empty, rtype: _empty, rclass: _empty, ttl: _empty, rdata: _empty)
+  attr: add_answer       type: method           value: (rr: _empty) -> _empty
+  attr: add_ar           type: method           value: (ar: _empty) -> _empty
+  attr: add_auth         type: method           value: (auth: _empty) -> _empty
+  attr: add_question     type: method           value: (q: _empty) -> _empty
+  attr: ar               type: list             value: []
+  attr: auth             type: list             value: []
+  attr: diff             type: method           value: (other: _empty) -> _empty
+  attr: format           type: method           value: (prefix: _empty, sort: _empty) -> _empty
+  attr: get_a            type: method           value: () -> _empty
+  attr: get_q            type: method           value: () -> _empty
+  attr: header           type: DNSHeader        value: DNSHeader.__init__(self: _empty, id: _empty, bitmap: _empty, q: _empty, a: _empty, auth: _empty, ar: _empty, args: _empty)
+  attr: pack             type: method           value: () -> _empty
+  attr: parse            type: method           value: (packet: _empty) -> _empty
+  attr: q                type: DNSQuestion      value: DNSQuestion.__init__(self: _empty, qname: _empty, qtype: _empty, qclass: _empty)
+  attr: question         type: method           value: (qname: _empty, qtype: _empty, qclass: _empty) -> _empty
+  attr: questions        type: list             value: [
+    type: DNSQuestion {
+      attr: _qname           type: DNSLabel         value: DNSLabel.__init__(self: _empty, label: _empty)
+      attr: get_qname        type: method           value: () -> _empty
+      attr: pack             type: method           value: (buffer: _empty) -> _empty
+      attr: parse            type: method           value: (buffer: _empty) -> _empty
+      attr: qclass           type: int              value: 1
+      attr: qname            type: DNSLabel         value: DNSLabel.__init__(self: _empty, label: _empty)
+      attr: qtype            type: int              value: 1
+      attr: set_qname        type: method           value: (qname: _empty) -> _empty
+      attr: toZone           type: method           value: () -> _empty
+    }
+  ]
+  attr: reply            type: method           value: (ra: _empty, aa: _empty) -> _empty
+  attr: replyZone        type: method           value: (zone: _empty, ra: _empty, aa: _empty) -> _empty
+  attr: rr               type: list             value: [
+    type: RR {
+      attr: _rclass          type: int              value: 1
+      attr: _rname           type: DNSLabel         value: DNSLabel.__init__(self: _empty, label: _empty)
+      attr: _rtype           type: int              value: 1
+      attr: _ttl             type: int              value: 0
+      attr: edns_do          type: int              value: 0
+      attr: fromZone         type: method           value: (zone: _empty, origin: _empty, ttl: _empty) -> _empty
+      attr: get_do           type: method           value: () -> _empty
+      attr: get_rname        type: method           value: () -> _empty
+      attr: pack             type: method           value: (buffer: _empty) -> _empty
+      attr: parse            type: method           value: (buffer: _empty) -> _empty
+      attr: rclass           type: int              value: 1
+      attr: rdata            type: RD               value: \# 1 00
+      attr: rname            type: DNSLabel         value: DNSLabel.__init__(self: _empty, label: _empty)
+      attr: rtype            type: int              value: 1
+      attr: set_do           type: method           value: (val: _empty) -> _empty
+      attr: set_rname        type: method           value: (rname: _empty) -> _empty
+      attr: toZone           type: method           value: () -> _empty
+      attr: ttl              type: int              value: 0
+    }
+  ]
+  attr: send             type: method           value: (dest: _empty, port: _empty, tcp: _empty, timeout: _empty, ipv6: _empty) -> _empty
+  attr: set_header_qa    type: method           value: () -> _empty
+  attr: short            type: method           value: () -> _empty
+  attr: toZone           type: method           value: (prefix: _empty) -> _empty
+  attr: truncate         type: method           value: () -> _empty
+}type: generator {
+  attr: close            type: builtin_function_or_method value: <built-in method close of generator object at 0x7fa09f2a0d40>
+  attr: gi_code          type: code             value: <code object parse at 0x5590349868d0, file "/home/vscode/.pyenv/versions/3.14.0a5/lib/python3.14/site-packages/dnslib/dns.py", line 2556>
+  attr: gi_frame         type: frame            value: <frame at 0x7fa09f2a3740, file '/home/vscode/.pyenv/versions/3.14.0a5/lib/python3.14/site-packages/dnslib/dns.py', line 2556, code parse>
+  attr: gi_running       type: bool             value: False
+  attr: gi_suspended     type: bool             value: False
+  attr: gi_yieldfrom     type: NoneType         value: None
+  attr: send             type: builtin_function_or_method value: <built-in method send of generator object at 0x7fa09f2a0d40>
+  attr: throw            type: builtin_function_or_method value: <built-in method throw of generator object at 0x7fa09f2a0d40>
+}type: DNSHeader {
+  attr: _a               type: int              value: 0
+  attr: _ar              type: int              value: 0
+  attr: _auth            type: int              value: 0
+  attr: _bitmap          type: int              value: 256
+  attr: _id              type: int              value: 33577
+  attr: _q               type: int              value: 0
+  attr: a                type: int              value: 0
+  attr: aa               type: int              value: 0
+  attr: ad               type: int              value: 0
+  attr: ar               type: int              value: 0
+  attr: auth             type: int              value: 0
+  attr: bitmap           type: int              value: 256
+  attr: cd               type: int              value: 0
+  attr: get_aa           type: method           value: () -> _empty
+  attr: get_ad           type: method           value: () -> _empty
+  attr: get_cd           type: method           value: () -> _empty
+  attr: get_opcode       type: method           value: () -> _empty
+  attr: get_qr           type: method           value: () -> _empty
+  attr: get_ra           type: method           value: () -> _empty
+  attr: get_rcode        type: method           value: () -> _empty
+  attr: get_rd           type: method           value: () -> _empty
+  attr: get_tc           type: method           value: () -> _empty
+  attr: get_z            type: method           value: () -> _empty
+  attr: id               type: int              value: 33577
+  attr: opcode           type: int              value: 0
+  attr: pack             type: method           value: (buffer: _empty) -> _empty
+  attr: parse            type: method           value: (buffer: _empty) -> _empty
+  attr: q                type: int              value: 0
+  attr: qr               type: int              value: 0
+  attr: ra               type: int              value: 0
+  attr: rcode            type: int              value: 0
+  attr: rd               type: int              value: 1
+  attr: set_aa           type: method           value: (val: _empty) -> _empty
+  attr: set_ad           type: method           value: (val: _empty) -> _empty
+  attr: set_cd           type: method           value: (val: _empty) -> _empty
+  attr: set_opcode       type: method           value: (val: _empty) -> _empty
+  attr: set_qr           type: method           value: (val: _empty) -> _empty
+  attr: set_ra           type: method           value: (val: _empty) -> _empty
+  attr: set_rcode        type: method           value: (val: _empty) -> _empty
+  attr: set_rd           type: method           value: (val: _empty) -> _empty
+  attr: set_tc           type: method           value: (val: _empty) -> _empty
+  attr: set_z            type: method           value: (val: _empty) -> _empty
+  attr: tc               type: int              value: 0
+  attr: toZone           type: method           value: () -> _empty
+  attr: z                type: int              value: 0
+}type: DNSQuestion {
+  attr: _qname           type: DNSLabel         value: DNSLabel.__init__(self: _empty, label: _empty)
+  attr: get_qname        type: method           value: () -> _empty
+  attr: pack             type: method           value: (buffer: _empty) -> _empty
+  attr: parse            type: method           value: (buffer: _empty) -> _empty
+  attr: qclass           type: int              value: 1
+  attr: qname            type: DNSLabel         value: DNSLabel.__init__(self: _empty, label: _empty)
+  attr: qtype            type: int              value: 1
+  attr: set_qname        type: method           value: (qname: _empty) -> _empty
+  attr: toZone           type: method           value: () -> _empty
+}type: DNSLabel {
+  attr: _decode          type: method           value: (s: _empty) -> _empty
+  attr: add              type: method           value: (name: _empty) -> _empty
+  attr: idna             type: method           value: () -> _empty
+  attr: label            type: tuple            value: (b'example', b'com')
+  attr: matchGlob        type: method           value: (pattern: _empty) -> _empty
+  attr: matchSuffix      type: method           value: (suffix: _empty) -> _empty
+  attr: stripSuffix      type: method           value: (suffix: _empty) -> _empty
+}

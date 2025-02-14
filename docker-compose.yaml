@@ -6,13 +6,14 @@ services:
       - ./dns:/app
       - ./.docker/.root/dns:/root
     ports:
-      - "${ROUTER_INNER_IP}:5353:5353"
+      - "${ROUTER_INNER_IP}:5353:53"
       - "${ROUTER_OUTER_IP}:53535:53535"
     user: root
     command: /app/run.sh
     environment:
       INNER_IP: ${ROUTER_INNER_IP}
       OUTER_IP: ${ROUTER_OUTER_IP}
+      LOCAL_DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
       NETWORK_IP: ${NETWORK_IP}
       SUBNET_MASK: ${SUBNET_MASK}
     networks:
@@ -27,8 +28,8 @@ services:
       - ./dhcp:/app
       - ./.docker/.root/dhcp:/root
     ports:
-      - "${ROUTER_INNER_IP}:6767:6767"
-      - "${ROUTER_OUTER_IP}:6868:6868"
+      - "${ROUTER_INNER_IP}:6767:67"
+      - "${ROUTER_INNER_IP}:6868:68"
     user: root
     command: /app/run.sh
     environment:

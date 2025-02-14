@@ -1,28 +1,11 @@
-from os import environ as env
-
-# from dnslib import DNSRecord, QTYPE
+from threading import Thread
 import socket
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-  client.bind((env[""], 53535));
-  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
-    server.bind(("0.0.0.0", 5353))
-    server.listen()
-    print("DNS server (tcp) is Running")
-    conn, _ = server.accept()
-    with conn:
-      while True:
-        data = conn.recv(1024)
-        if not data:
-          break
-        print(f"Received: {data}")
-        # conn.sendall(data)
+from my_modules import run_tcp, run_udp
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
-  server.bind(("0.0.0.0", 5353))
-  print("DNS server (udp) is Running")
-
-  while True:
-    data, addr = server.recvfrom(512)
-    print(f"Received: {data}")
-    # server.sendto(data, addr)
+thread1 = Thread(target=run_tcp)
+thread2 = Thread(target=run_udp)
+thread1.start()
+thread2.start()
+thread1.join()
+thread2.join()
