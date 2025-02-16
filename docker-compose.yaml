@@ -16,8 +16,6 @@ services:
       LOCAL_DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
       NETWORK_IP: ${NETWORK_IP}
       SUBNET_MASK: ${SUBNET_MASK}
-    networks:
-      - internal_net
     depends_on:
       - rails
 
@@ -36,8 +34,6 @@ services:
       DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
       NETWORK_IP: ${NETWORK_IP}
       SUBNET_MASK: ${SUBNET_MASK}
-    networks:
-      - internal_net
     depends_on:
       - rails
 
@@ -48,8 +44,6 @@ services:
       - ./.docker/.root/rails:/root
     user: root
     command: /app/run.sh
-    networks:
-      - internal_net
     depends_on:
       - db
     environment:
@@ -61,15 +55,13 @@ services:
 
   db:
     image: postgres:15
-    networks:
-      - internal_net
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - db_data:/var/lib/postgresql/data
-      
+
 volumes:
   db_data:
     driver: local

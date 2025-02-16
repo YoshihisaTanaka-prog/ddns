@@ -32,8 +32,6 @@ services:
       SUBNET_MASK: ${SUBNET_MASK}
       LOCAL_DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
       LOCAL_SOA: ${LOCAL_SOA}
-    networks:
-      - internal_net
     depends_on:
       - dns
       - dhcp
