@@ -69,11 +69,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - db_data:/var/lib/postgresql/data
-
-networks:
-  internal_net:
-    driver: bridge
-
+      
 volumes:
   db_data:
     driver: local

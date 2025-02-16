@@ -74,10 +74,6 @@ services:
       service: db
     container_name: ddns-server-db
 
-networks:
-  internal_net:
-    driver: bridge
-
 volumes:
   db_data:
     driver: local
