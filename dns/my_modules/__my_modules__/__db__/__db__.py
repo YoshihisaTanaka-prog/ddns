@@ -5,7 +5,7 @@ from requests import post as post_unit
 from dnslib import DNSRecord, DNSLabel, RR, DNSQuestion
 from my_modules.__my_modules__ import converter
 
-def post(path, json:dict|None=None) -> dict:
+def post(path, json:dict|None=None):
   response = post_unit("http://rails:3000/dns/" + path, json=json, headers={"Content-Type": "application/json"})
   if response.status_code == 200:
     return response.json()
@@ -35,18 +35,18 @@ def search_local(header, question, new_domain_label: DNSLabel) -> DNSRecord:
   else:
     path = "search-ip"
     data["hostname"] = ".".join([unit.decode("idna") for unit in new_domain_label.label[:-3]])
-  response_dict = post(path, data)
-  if response_dict["answer"] == None:
+  response = post(path, data)
+  if response == None:
     record.header.set_rcode(3)
   return record
 
 def search_cache(header, question:DNSQuestion) -> DNSRecord|None:
-  response_dict = post("search-cache", converter.get_cache_params(question))
-  if response_dict == None:
+  response= post("search-cache", converter.get_cache_params(question))
+  if response == None:
     return None
   else:
     record = DNSRecord(header=header, questions=[question])
-    return converter.answer_recode(record, response_dict)
+    return converter.answer_recode(record, response)
 
 def set_cache(record: DNSRecord) -> None:
   post("set", converter.set_cache_params(record))
