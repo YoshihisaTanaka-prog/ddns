@@ -24,7 +24,7 @@ class MyDHCPOptions(dict[int, bytes]):
       self.set(15, DOMAIN_SUFFIX.encode())
     self.set(53, int.from_bytes([data[2]]))
     self.set(66, from_ip(ROUTER_IP))
-    index = 3
+    index = 0
     code = data[index]
     while code != 255:
       length = data[index+1]
