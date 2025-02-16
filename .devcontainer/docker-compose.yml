@@ -42,8 +42,8 @@ services:
       service: dns
     container_name: ddns-server-dns
     ports:
-      - "${ROUTER_INNER_IP}:5353:53/tcp"
-      - "${ROUTER_INNER_IP}:5353:53/udp"
+      - "5353:53/tcp"
+      - "5353:53/udp"
       - "${ROUTER_OUTER_IP}:53535:53535"
     depends_on:
       - rails
@@ -54,7 +54,7 @@ services:
       service: dhcp
     container_name: ddns-server-dhcp
     ports:
-      - "${ROUTER_INNER_IP}:6767:67/udp"
+      - "6767:67/udp"
     depends_on:
       - rails
 
