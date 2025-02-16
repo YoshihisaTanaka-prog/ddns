@@ -5,8 +5,8 @@ services:
       - ./dns:/app
       - ./.docker/.root/dns:/root
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
+      - "0.0.0.0:53:53/tcp"
+      - "0.0.0.0:53:53/udp"
       - "${ROUTER_OUTER_IP}:53535:53535"
     user: root
     command: /app/run.sh
@@ -25,7 +25,7 @@ services:
       - ./dhcp:/app
       - ./.docker/.root/dhcp:/root
     ports:
-      - "67:67/udp"
+      - "0.0.0.0:67:67/udp"
     user: root
     command: /app/run.sh
     environment:
