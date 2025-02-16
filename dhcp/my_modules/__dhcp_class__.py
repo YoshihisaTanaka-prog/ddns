@@ -70,7 +70,6 @@ class MyDHCP:
       self.server_name = f"{HOST_NAME}.{DOMAIN_SUFFIX}"
     self.options = MyDHCPOptions(data[240:])
     dic = self.__dict__
-    dic["options"] = self.options.__dict__
     print(dic)
     
   def set_option(self, code: int, value: bytes|bytearray|str) -> MyDHCP:
