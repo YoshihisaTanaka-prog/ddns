@@ -2,6 +2,6 @@
 
 cd $(dirname $0)
 
-run main.py
+python main.py
 
 sleep infinity
