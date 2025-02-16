@@ -8,8 +8,7 @@ def run():
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(("0.0.0.0", 53))
     server.listen()
-    docker_ip_address = socket.gethostbyname(socket.gethostname())
-    print(f"DNS server (TCP) is Running on {docker_ip_address}:{53}")
+    print(f"DNS server (TCP) is Running on {socket.gethostbyname(socket.gethostname())}:{53}")
     conn, _ = server.accept()
     with conn:
       while True:

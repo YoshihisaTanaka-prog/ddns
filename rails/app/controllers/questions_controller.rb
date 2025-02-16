@@ -73,7 +73,7 @@ class QuestionsController < ApplicationController
 
     def s_o_as_params
       if params[:s_o_as].nil?
-        raise ActionController::ParameterMissing.new("param is missing or the value is invalid: s_o_as")
+        raise ActionController::ParameterMissing.new("s_o_as")
       elsif params[:s_o_as].instance_of?(Array)
         if params[:s_o_as].empty?
           []
@@ -83,13 +83,13 @@ class QuestionsController < ApplicationController
           end
         end
       else
-        raise ActionController::ParameterMissing.new("param is invalid: s_o_as")
+        raise ActionController::ParameterMissing.new("s_o_as")
       end
     end
     
     def zones_params
       if params[:zones].nil?
-        raise ActionController::ParameterMissing.new("param is missing: zones")
+        raise ActionController::ParameterMissing.new("zones")
       elsif params[:zones].instance_of?(Array)
         if params[:zones].empty?
           []
@@ -99,7 +99,7 @@ class QuestionsController < ApplicationController
           end
         end
       else
-        raise ActionController::ParameterMissing.new("param is invalid: zones")
+        raise ActionController::ParameterMissing.new("zones")
       end
     end
 end

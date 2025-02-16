@@ -1,56 +1,78 @@
 class HostsController < ApplicationController
-  before_action :set_host, only: %i[ create_update destroy ]
-
-  def search_host
-    ips = params[:ipv4].split(".")
-    ipv4 = [ips[3], ips[2], ips[1], ips[0]].join(".")
-    host = Host.find_by(ipv4: ipv4)
-    if host.nil?
-      render json: {answer: nil}
-    elsif host.time_limit < Time.current
-      render json: {answer: nil}
+  def search_dns_host
+    if params[:ip_domain].nil?
+      raise ActionController::ParameterMissing.new("ip_domain")
     else
-      render json: {answer: host.hostname}
+      ips = params[:ip_domain].split(".")
+      ip_address = [ips[3], ips[2], ips[1], ips[0]].join(".")
+      host = Host.find_by(ip_address: ip_address)
+      if host.nil?
+        render json: nil
+      elsif host.time_limit < Time.current
+        render json: nil
+      else
+        render json: host.hostname.to_json
+      end
     end
   end
 
-  def search_ipv4
-    host = Host.find_by(hostname: params[:hostname])
-    if host.nil?
-      render json: {answer: nil}
-    elsif host.time_limit < Time.current
-      render json: {answer: nil}
+  def search_dns_ip
+    if params[:hostname].nil?
+      raise ActionController::ParameterMissing.new("hostname")
     else
-      render json: {answer: host.ipv4}
+      host = Host.find_by(hostname: params[:hostname])
+      if host.nil?
+        render json: nil
+      elsif host.time_limit < Time.current
+        render json: nil
+      else
+        render json: host.ip_address.to_json
+      end
+    end
+  end
+
+  def search_dhcp_ip
+    if params.dig(:host, :ip_address).nil?
+      raise ActionController::ParameterMissing.new("host[:ip_address]")
+    else
+      host = Host.find_by(ip_address: params.dig(:host, :ip_address))
+      logger.info host
+      if host.nil?
+        render json: false
+      elsif host.time_limit < Time.current
+        render json: false
+      else
+        render json: true
+      end
     end
   end
 
   def search_dhcp
-    if params[:host].nil?
-      if params[:ipv4].nil?
-        render json: nil
-      else
-        render json: Host.where("ipv4 LIKE ?", "#{params[:ipv4]}%").map do |host|
-          host.ipv4.split(".").map(&:to_i)
-        end
-      end
+    @host = Host.find_by(searching_host_params)
+    if @host.nil?
+      render json: nil
+    elsif @host.time_limit < Time.current
+      render json: nil
     else
-      @host = Host.find_by(searching_host_params)
-      render json: Host.find_by(searching_host_params)
-    end
-  end
-
-  def search_dhcp_list
-    render json: Host.where("ipv4 LIKE ?", "#{params[:ipv4]}%").map do |host|
-      host.ipv4.split(".").map(&:to_i)
+      render json: @host.ip_address.to_json
     end
   end
 
   def create_update
-    @host = Host.find_or_create_by(searching_host_params)
-    if @host.update(updating_host_params)
+    hp = updating_host_params
+    @is_creating = false
+    @host = Host.find_or_create_by(searching_host_params) do |host|
+      host.hostname = hp[:hostname]
+      host.ip_address = hp[:ip_address]
+      host.time_limit = hp[:time_limit]
+      @is_creating = true
+    end
+    if @is_creating
       self.update_settings({serial: true})
-      render json: @host
+      render json: {}
+    elsif @host.update(hp)
+      self.update_settings({serial: true})
+      render json: {}
     else
       render json: @host.errors, status: :unprocessable_entity
     end
@@ -74,7 +96,12 @@ class HostsController < ApplicationController
     end
 
     def updating_host_params
-      p = params.require(:host).permit(:hostname, :ipv4, :ttl)
-      return {hostname: p[:hostname], ipv4: p[:ipv4], time_limit: Time.current + p[:ttl].seconds}
+      p = params.expect(host: [:hostname, :ip_address, :ttl])
+      if p[:ttl].nil?
+        soa_data = JSON.parse(ENV.fetch("LOCAL_SOA"), symbolize_names: true)
+        return {hostname: p[:hostname], ip_address: p[:ip_address], time_limit: Time.current + soa_data[:minimum].seconds}
+      else
+        return {hostname: p[:hostname], ip_address: p[:ip_address], time_limit: Time.current + p[:ttl].seconds}
+      end
     end
 end

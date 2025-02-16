@@ -32,6 +32,8 @@ services:
     command: /app/run.sh
     environment:
       ROUTER_IP: ${ROUTER_INNER_IP}
+      HOST_NAME: ${ROUTER_HOST_NAME}
+      DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
       NETWORK_IP: ${NETWORK_IP}
       SUBNET_MASK: ${SUBNET_MASK}
     networks:

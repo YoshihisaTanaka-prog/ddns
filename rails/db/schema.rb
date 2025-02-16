@@ -18,11 +18,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_16_051503) do
     t.string "hostname", null: false
     t.string "mac_address", null: false
     t.string "client_id"
-    t.string "ipv4"
+    t.string "ip_address", null: false
     t.datetime "time_limit", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["hostname"], name: "index_hosts_on_hostname", unique: true
+    t.index ["ip_address"], name: "index_hosts_on_ip_address", unique: true
     t.index ["mac_address"], name: "index_hosts_on_mac_address", unique: true
   end
 

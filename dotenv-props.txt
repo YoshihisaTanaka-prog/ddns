@@ -2,6 +2,7 @@ ROUTER_INNER_IP=
 ROUTER_OUTER_IP=
 NETWORK_IP=
 SUBNET_MASK=
+ROUTER_HOST_NAME=
 LOCAL_DOMAIN_SUFFIX=
 LOCAL_SOA='{"refresh": ,"retry": ,"expire": ,"minimum": ,"primary": ,"admin": }'
 DB_USER=

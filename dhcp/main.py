@@ -1,15 +1,12 @@
-from os import environ as env
-
 import socket
 
-ip_address = socket.gethostbyname(socket.gethostname())
+from my_modules import MyDHCP, erase_data, search_from_client_data, search_from_ip, set_data
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
-  sender.bind((ip_address, 68))
-  with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as listener:
-    listener.bind(("0.0.0.0", 67))
-    print(f"DHCP server is Running on {ip_address}:{67}")
-    while True:
-      data, addr = listener.recvfrom(512)
-      print(f"Received: {data}")
-      # server.sendto(data, addr)
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
+  server.bind(("0.0.0.0", 67))
+  print(f"DHCP server is Running on {socket.gethostbyname(socket.gethostname())}:{67}")
+  while True:
+    data, _ = server.recvfrom(512)
+    print(f"Received: {data}")
+    MyDHCP(data)
+    server.sendto(b"", ("255.255.255.255", 68))
