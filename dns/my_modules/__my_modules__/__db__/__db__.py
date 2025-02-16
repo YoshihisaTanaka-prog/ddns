@@ -17,16 +17,16 @@ def post(path, json:dict|None=None):
       traceback.print_exc()
       exit(1)
 
-def get_my_soa(domain_label: DNSLabel|None=None) -> RR|None:
+def get_my_soa() -> RR|None:
   auth_response = post_unit("http://rails:3000/get-settings/soa", headers={"Content-Type": "application/json"})
   if auth_response.status_code == 200:
-    return converter.auth(auth_response.json(), domain_label)
+    return converter.auth(auth_response.json())
   else:
     raise Exception(f"Error fetching SOA record: {auth_response.text}")
 
 def search_local(header, question, new_domain_label: DNSLabel) -> DNSRecord:
   record = DNSRecord(header=header, questions=[question]).reply()
-  record.add_auth(*get_my_soa(new_domain_label))
+  record.add_auth(*get_my_soa())
   path = None
   data = {}
   if new_domain_label.matchSuffix("in-addr.arpa"):

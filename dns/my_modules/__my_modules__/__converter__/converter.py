@@ -61,7 +61,7 @@ def request(data) -> MyQuestion:
       search_label = search_label[1:]
     return MyQuestion.get_global(header, question)
   
-def auth_rr(my_dict:dict, domain_label:DNSLabel=DNSLabel(""))->RR:
+def auth_rr(my_dict:dict, domain_label:DNSLabel=DNSLabel(LOCAL_DOMAIN_SUFFIX))->RR:
   zone = f"{domain_label} {my_dict["minimum"]} IN SOA {my_dict['primary']} {my_dict['admin']} {my_dict['serial']} {my_dict['refresh']} {my_dict['retry']} {my_dict['expire']} {my_dict['minimum']}"
   print(zone)
   return RR.fromZone(zone)
