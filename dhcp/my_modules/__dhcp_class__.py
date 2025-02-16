@@ -68,7 +68,7 @@ class MyDHCP:
     self.server_name = ""
     if (DOMAIN_SUFFIX != "") and (HOST_NAME != ""):
       self.server_name = f"{HOST_NAME}.{DOMAIN_SUFFIX}"
-    self.options = MyDHCPOptions(data[243:])
+    self.options = MyDHCPOptions(data[240:])
     dic = self.__dict__
     dic["options"] = self.options.__dict__
     print(dic)
