@@ -13,5 +13,6 @@ def from_global(header, question, callback, server_socket, addr=None) -> DNSReco
   length = struct.unpack("!H",bytes(response[:2]))[0]
   while len(response) - 2 < length:
     response += client.recv(1024)
-  callback(DNSRecord.parse(response[2:]), server_socket, addr)
+  record = DNSRecord.parse(response[2:])
+  callback(record, server_socket, addr)
   client.close()

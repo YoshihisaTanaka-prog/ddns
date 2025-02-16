@@ -1,7 +1,6 @@
 services:
   dns:
     build: ./.docker/dns
-    container_name: ddns-server-dns
     volumes:
       - ./dns:/app
       - ./.docker/.root/dns:/root
@@ -23,7 +22,6 @@ services:
 
   dhcp:
     build: ./.docker/dhcp
-    container_name: ddns-server-dhcp
     volumes:
       - ./dhcp:/app
       - ./.docker/.root/dhcp:/root
@@ -43,7 +41,6 @@ services:
 
   rails:
     build: ./.docker/rails
-    container_name: ddns-server-rails
     volumes:
       - ./rails:/app
       - ./.docker/.root/rails:/root
@@ -55,13 +52,13 @@ services:
       - db
     environment:
       RAILS_ENV: development
+      LOCAL_SOA: ${LOCAL_SOA}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
 
   db:
     image: postgres:15
-    container_name: ddns-server-db
     networks:
       - internal_net
     environment:
@@ -74,9 +71,7 @@ services:
 networks:
   internal_net:
     driver: bridge
-    # internal: true
 
 volumes:
   db_data:
     driver: local
-    name: ddns_db_data

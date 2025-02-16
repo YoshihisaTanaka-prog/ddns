@@ -2,20 +2,22 @@ test*
 
 __pycache__
 
-/dhcp/modules
-/dns/modules
+/rails/server-data.json
+/rails/routes.txt
+/rails/get-routes.sh
 
 
 .env
 node_modules
 
-/.docker/.root
-
-/rails/vendor/bundle
+/.docker/.root/*
+!/.docker/.root/dhcp/.keep
+!/.docker/.root/dns/.keep
+!/.docker/.root/rails/.keep
 
 # Ignore bundler and the config.
+/rails/.bundle/cache
 /rails/vendor/bundle
-/rails/.bundle
 
 # Ignore all logfiles and tempfiles.
 /rails/log/*

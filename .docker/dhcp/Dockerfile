@@ -1,3 +1,3 @@
 FROM python:3.14.0a5-bookworm
-RUN pip install scapy
+RUN pip install scapy requests
 WORKDIR /app
