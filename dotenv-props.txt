@@ -7,4 +7,4 @@ LOCAL_DOMAIN_SUFFIX=
 LOCAL_SOA='{"refresh": ,"retry": ,"expire": ,"minimum": ,"primary": ,"admin": }'
 DB_USER=
 DB_PASSWORD=
-DB_DB=
+DB_NAME=
