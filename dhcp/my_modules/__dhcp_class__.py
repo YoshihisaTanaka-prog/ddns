@@ -24,7 +24,6 @@ class MyDHCPOptions(dict[int, bytes]):
       self.set(15, DOMAIN_SUFFIX.encode())
     self.set(53, data[2].to_bytes(1))
     self.set(66, from_ip(ROUTER_IP))
-    print([num for num in data[:10]])
     index = 3
     code = data[index]
     while code != 255:
@@ -43,6 +42,7 @@ class MyDHCPOptions(dict[int, bytes]):
         self[code] = value
       else:
         self[code] = bytes(value)
+        
   def to_bytes(self) -> bytes:
     return_value = bytearray([53,1,self.get(53)])
     for code in range(1, 255):
@@ -76,6 +76,9 @@ class MyDHCP:
   def set_option(self, code: int, value: bytes|bytearray|str) -> MyDHCP:
     self.options.set(code, value)
     return self
+  
+  def get_message_type(self) -> int:
+    return int.from_bytes(self.options[53])
   
   def to_bytes(self, secs:int) -> bytes:
     zero = 0
