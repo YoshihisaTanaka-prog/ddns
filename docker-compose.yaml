@@ -5,7 +5,7 @@ services:
       - ./dns:/app
       - ./.docker/.root/dns:/root
     ports:
-      - "${ROUTER_INNER_IP}:5353:53"
+      - "${ROUTER_INNER_IP}:53:53"
       - "${ROUTER_OUTER_IP}:53535:53535"
     user: root
     command: /app/run.sh
@@ -26,8 +26,7 @@ services:
       - ./dhcp:/app
       - ./.docker/.root/dhcp:/root
     ports:
-      - "${ROUTER_INNER_IP}:6767:67"
-      - "${ROUTER_INNER_IP}:6868:68"
+      - "${ROUTER_INNER_IP}:67:67"
     user: root
     command: /app/run.sh
     environment:

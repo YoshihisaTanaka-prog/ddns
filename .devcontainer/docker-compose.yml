@@ -43,6 +43,9 @@ services:
       file: ../docker-compose.yaml
       service: dns
     container_name: ddns-server-dns
+    ports:
+      - "${ROUTER_INNER_IP}:5353:53"
+      - "${ROUTER_OUTER_IP}:53535:53535"
     depends_on:
       - rails
 
@@ -51,6 +54,8 @@ services:
       file: ../docker-compose.yaml
       service: dhcp
     container_name: ddns-server-dhcp
+    ports:
+      - "${ROUTER_INNER_IP}:6767:67"
     depends_on:
       - rails
 
