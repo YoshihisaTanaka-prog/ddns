@@ -10,5 +10,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
   while True:
     data, _ = server.recvfrom(512)
     print(f"Received: {data}")
-    MyDHCP(data)
-    server.sendto(b"", ("255.255.255.255", 68))
+    my_dhcp = MyDHCP(data)
+    message_type = my_dhcp.get_message_type()
+    if message_type == 1:  # DISCOVER
+      pass
+    if message_type in (3, 8):  # REQUEST or INFORM
+      pass
+    if message_type == 7:  # RELEASE
+      pass
+    server.sendto(my_dhcp.to_bytes(), ("255.255.255.255", 68))

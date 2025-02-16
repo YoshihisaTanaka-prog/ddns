@@ -28,14 +28,14 @@ class MyDHCPOptions(dict[int, bytes]):
     code = data[index]
     while code != 255:
       length = data[index+1]
-      if code not in (1, 6, 15, 53, 66):
+      if code not in (1, 6, 15, 53, 55, 66):
         value = data[index+2:index+length+2]
         self.set(code, value)
       index += length+2
       code = data[index]
 
   def set(self, code: int, value: bytes|bytearray|str):
-    if code > 0 and code < 256:
+    if code > 0 and code < 256 and code not in (1, 6, 15, 53, 55, 66):
       if isinstance(value, str):
         self[code] = value.encode()
       elif isinstance(value, bytes):
@@ -44,7 +44,7 @@ class MyDHCPOptions(dict[int, bytes]):
         self[code] = bytes(value)
         
   def to_bytes(self) -> bytes:
-    return_value = bytearray([53,1,self.get(53)])
+    return_value = bytearray([53,1,self[53][0]])
     for code in range(1, 255):
       if code == 53:
         continue
@@ -56,12 +56,7 @@ class MyDHCPOptions(dict[int, bytes]):
 
 class MyDHCP:
   def __init__(self, data:bytes):
-    self.op = int.from_bytes(data[0:1])
-    self.hard_type = int.from_bytes(data[1:2])
-    self.hard_length = int.from_bytes(data[2:3])
-    self.xid = int.from_bytes(data[4:8])
-    self.secs = int.from_bytes(data[8:10])
-    self.flags = int.from_bytes(data[10:12])
+    self.init_data = data[0:12]
     self.client_ip = to_ip(data[12:16])
     self.your_ip = to_ip(data[16:20])
     self.server_ip = ROUTER_IP
@@ -78,14 +73,11 @@ class MyDHCP:
     return self
   
   def get_message_type(self) -> int:
-    return int.from_bytes(self.options[53])
+    return self.options[53][0]
   
-  def to_bytes(self, secs:int) -> bytes:
+  def to_bytes(self) -> bytes:
     zero = 0
-    data = bytearray([self.op, self.hard_type, self.hard_length])
-    data += self.xid.to_bytes(4, 'big')
-    data += secs.to_bytes(2, 'big')
-    data += self.flags.to_bytes(2, 'big')
+    data = self.init_data
     data += from_ip(self.client_ip)
     data += from_ip(self.your_ip)
     data += from_ip(self.server_ip)
@@ -107,4 +99,3 @@ class MyDHCP:
       return ClientData(self.client_hard_address.hex())
     else:
       return ClientData(self.client_hard_address.hex(), op61.hex())
-    
