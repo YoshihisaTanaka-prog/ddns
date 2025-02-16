@@ -22,7 +22,7 @@ class MyDHCPOptions(dict[int, bytes]):
     self.set(6, from_ip(ROUTER_IP))
     if DOMAIN_SUFFIX != None:
       self.set(15, DOMAIN_SUFFIX.encode())
-    self.set(53, data[2])
+    self.set(53, data[2].to_bytes(1))
     self.set(66, from_ip(ROUTER_IP))
     print([num for num in data[:10]])
     index = 3
