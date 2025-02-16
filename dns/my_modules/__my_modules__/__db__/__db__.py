@@ -31,7 +31,7 @@ def search_local(header, question, new_domain_label: DNSLabel) -> DNSRecord:
   data = {}
   if new_domain_label.matchSuffix("in-addr.arpa"):
     path = "search-host"
-    data["ip_address"] = new_domain_label.idna()
+    data["ip_domain"] = new_domain_label.idna()
   else:
     path = "search-ip"
     data["hostname"] = ".".join([unit.decode("idna") for unit in new_domain_label.label[:-3]])
