@@ -1,4 +1,5 @@
 class Question < ApplicationRecord
-  has_and_belongs_to_many :s_o_as
+  has_many :question_soa_relations
+  has_many :soas, through: :question_soa_relations
   has_many :zones
 end

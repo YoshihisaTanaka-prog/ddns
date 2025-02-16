@@ -3,13 +3,6 @@ from .__my_modules__ import converter, search, db
 from dnslib import DNSRecord
 
 def send_response(response, server_socket, addr):
-  for a in response.auth:
-    print("AUTH", a.toZone())
-    # a.rdata.mname -> primary DNS server
-    # a.rdata.rname -> admin mail address
-    # a.rdata.times -> numbers of serial, refresh, retry, expire, minimum TTL
-  for a in response.rr:
-    print(a.toZone())
   if addr:
     server_socket.sendto(response.pack(), addr)
   else:

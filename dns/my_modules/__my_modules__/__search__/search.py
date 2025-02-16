@@ -2,7 +2,7 @@ import socket
 import struct
 from dnslib import DNSRecord
 
-def from_global(header, question, callback, server_socket, addr=None) -> DNSRecord:
+def from_global(header, question, callback, server_socket, addr) -> DNSRecord:
   client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
   client.bind(("0.0.0.0", 53535))

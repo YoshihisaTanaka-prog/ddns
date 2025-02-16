@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_15_030512) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_16_051503) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,6 +26,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_030512) do
     t.index ["mac_address"], name: "index_hosts_on_mac_address", unique: true
   end
 
+  create_table "question_soa_relations", force: :cascade do |t|
+    t.bigint "question_id", null: false
+    t.bigint "soa_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_question_soa_relations_on_question_id"
+    t.index ["soa_id"], name: "index_question_soa_relations_on_soa_id"
+  end
+
   create_table "questions", force: :cascade do |t|
     t.string "domain"
     t.integer "record_type"
@@ -34,14 +43,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_030512) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "questions_s_o_as", id: false, force: :cascade do |t|
-    t.bigint "question_id", null: false
-    t.bigint "s_o_a_id", null: false
-    t.index ["question_id", "s_o_a_id"], name: "index_questions_s_o_as_on_question_id_and_s_o_a_id"
-    t.index ["s_o_a_id", "question_id"], name: "index_questions_s_o_as_on_s_o_a_id_and_question_id"
-  end
-
-  create_table "s_o_as", force: :cascade do |t|
+  create_table "soas", force: :cascade do |t|
     t.string "primary"
     t.string "admin"
     t.string "value"
@@ -59,5 +61,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_030512) do
     t.index ["question_id"], name: "index_zones_on_question_id"
   end
 
+  add_foreign_key "question_soa_relations", "questions"
+  add_foreign_key "question_soa_relations", "soas"
   add_foreign_key "zones", "questions"
 end

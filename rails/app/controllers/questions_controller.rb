@@ -3,7 +3,7 @@ class QuestionsController < ApplicationController
     ApplicationRecord.transaction do
       @question = Question.find_by(question_params)
       unless @question.nil?
-        @s_o_as = @question.s_o_as
+        @s_o_as = @question.soas
         @zones = @question.zones
         now = Time.current
         @invalid_count = 0
@@ -11,18 +11,30 @@ class QuestionsController < ApplicationController
           s_o_a.time_limit < now
         end.each do |s_o_a|
           s_o_a.destroy!
+          @invalid_count = @invalid_count + 1
         end
         @zones.select do |zone|
           zone.time_limit < now
         end.each do |zone|
           zone.destroy!
+          @invalid_count = @invalid_count + 1
         end
       end
     end
     if @question.nil?
       render json: nil
     elsif @invalid_count == 0
-      render json: {zones: @zones, s_o_as: @s_o_as }
+      if @zones.empty? && @s_o_as.empty?
+        render json: nil
+      else
+        zones = @zones.map do |z|
+          z.output_format(@question.domain)
+        end
+        s_o_as = @s_o_as.map do |s|
+          s.value
+        end
+        render json: {zones: zones, s_o_as: s_o_as }
+      end
     else
       render json: nil
     end
@@ -34,15 +46,18 @@ class QuestionsController < ApplicationController
   def create_update
     ApplicationRecord.transaction do
       qp = question_params
-      @question = Question.find__or_create_by(question_params)
+      @question = Question.find_or_create_by(question_params)
+      now = Time.current
       s_o_as_params.each do |s|
-        @question.s_o_as.find_or_create_by(primary: s[:primary], admin: s[:admin]) do |s_o_a|
-          s_o_a.value = s[:value]
-          s_o_a.ttl = s[:ttl]
+        @question.soas.find_or_create_by(primary: s[:primary], admin: s[:admin]) do |soa|
+          soa.value = s[:value]
+          soa.time_limit = now + s[:ttl].seconds
         end
       end
       zones_params.each do |z|
-        @question.zones.find_or_create_by(value: z[:value], ttl: z[:ttl])
+        @question.zones.find_or_create_by(value: z[:value]) do |zone|
+          zone.time_limit = now + z[:ttl].seconds
+        end
       end
     end
     render json: {}, status: 200
@@ -57,14 +72,34 @@ class QuestionsController < ApplicationController
     end
 
     def s_o_as_params
-      params.require(:s_o_as).map do |s|
-        s.permit(:primary, :admin, :value, :ttl)
+      if params[:s_o_as].nil?
+        raise ActionController::ParameterMissing.new("param is missing or the value is invalid: s_o_as")
+      elsif params[:s_o_as].instance_of?(Array)
+        if params[:s_o_as].empty?
+          []
+        else
+          params[:s_o_as].map.with_index do |s, index|
+            s.permit(:primary, :admin, :value, :ttl)
+          end
+        end
+      else
+        raise ActionController::ParameterMissing.new("param is invalid: s_o_as")
       end
     end
     
     def zones_params
-      params.require(:zones).map do |z|
-        z.permit(:value, :ttl)
+      if params[:zones].nil?
+        raise ActionController::ParameterMissing.new("param is missing: zones")
+      elsif params[:zones].instance_of?(Array)
+        if params[:zones].empty?
+          []
+        else
+          params[:zones].map.with_index do |z, index|
+            z.permit(:value, :ttl)
+          end
+        end
+      else
+        raise ActionController::ParameterMissing.new("param is invalid: zones")
       end
     end
 end

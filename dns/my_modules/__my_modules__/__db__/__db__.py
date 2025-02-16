@@ -1,13 +1,21 @@
+from os import _exit as exit
+import traceback
+
 from requests import post as post_unit
 from dnslib import DNSRecord, DNSLabel, RR, DNSQuestion
-from my_modules import converter
+from my_modules.__my_modules__ import converter
 
 def post(path, json:dict|None=None) -> dict:
   response = post_unit("http://rails:3000/dns/" + path, json=json, headers={"Content-Type": "application/json"})
   if response.status_code == 200:
     return response.json()
   else:
-    raise Exception(f"Error fetching settings: {response.text}")
+    try:
+      sent_exception = response.json()["exception"]
+      raise BaseException(f"\nstatus {response.status_code}\n{sent_exception}")
+    except:
+      traceback.print_exc()
+      exit(1)
 
 def get_my_soa(domain_label: DNSLabel|None=None) -> RR|None:
   auth_response = post_unit("http://rails:3000/get-settings/soa", headers={"Content-Type": "application/json"})
@@ -33,12 +41,12 @@ def search_local(header, question, new_domain_label: DNSLabel) -> DNSRecord:
   return record
 
 def search_cache(header, question:DNSQuestion) -> DNSRecord|None:
-  record = DNSRecord(header=header, questions=[question]).reply()
   response_dict = post("search-cache", converter.get_cache_params(question))
   if response_dict == None:
     return None
   else:
-    return record
+    record = DNSRecord(header=header, questions=[question])
+    return converter.answer_recode(record, response_dict)
 
 def set_cache(record: DNSRecord) -> None:
-  print(record)
+  post("set", converter.set_cache_params(record))

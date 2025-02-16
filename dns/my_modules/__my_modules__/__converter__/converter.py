@@ -66,36 +66,31 @@ def auth_rr(my_dict:dict, domain_label:DNSLabel=DNSLabel(""))->RR:
   print(zone)
   return RR.fromZone(zone)
 
-def set_auth_params(auth_list:list[RR])->dict:
-  return_list = []
-  for auth in auth_list:
-    # a.rdata.mname -> primary DNS server
-    # a.rdata.rname -> admin mail address
-    # a.rdata.times -> numbers of serial, refresh, retry, expire, minimum TTL
-    item_dict = {}
-    item_dict["primary"] = auth.rdata.mname.idna()
-    item_dict["admin"] = auth.rdata.rname.idna()
-    item_dict["value"] = auth.toZone()
-    item_dict["ttl"] = auth.ttl
-    return_list.append(item_dict)
-  print(return_list)
-  return return_list
-
-def answer_rr(my_dict:dict, domain_label:DNSLabel=DNSLabel(""))->RR:
-  return RR.fromZone("")
-
-def set_answer_params(answer_list:list[RR])->dict:
-  return_list = []
-  for answer in answer_list:
-    return_list.append({"value": answer.toZone(), "ttl": answer.ttl})
-  return return_list
-
 def get_cache_params(question: DNSQuestion)->dict:
   return_dict = {}
   return_dict["domain"] = question.get_qname().idna()
   return_dict["record_type"] = question.qtype
   return_dict["record_class"] = question.qclass
   return return_dict
+
+def set_auth_params(auth_list:list[RR])->dict:
+  return_list = []
+  for auth in auth_list:
+    item_dict = {}
+    item_dict["primary"] = auth.rdata.mname.idna()
+    item_dict["admin"] = auth.rdata.rname.idna()
+    item_dict["value"] = auth.toZone()
+    item_dict["ttl"] = auth.ttl
+    return_list.append(item_dict)
+  print("auth", return_list)
+  return return_list
+
+def set_answer_params(answer_list:list[RR])->dict:
+  return_list = []
+  for answer in answer_list:
+    return_list.append({"value": f" {answer.ttl} ".join(answer.toZone().split(f" {answer.ttl} ")[1:]), "ttl": answer.ttl})
+  print("answer", return_list)
+  return return_list
 
 def set_cache_params(recode: DNSRecord)->dict:
   return_dict = {}
@@ -106,5 +101,22 @@ def set_cache_params(recode: DNSRecord)->dict:
   question_dict["record_class"] = question.qclass
   return_dict["question"] = question_dict
   return_dict["s_o_as"] = set_auth_params(recode.auth)
-  return_dict["zones"] = set_answer_params(recode.ar)
+  return_dict["zones"] = set_answer_params(recode.rr)
   return return_dict
+
+def auth_rr_list(zones:list[str])->list[RR]:
+  return_array = []
+  for zone in zones:
+    return_array.extend(RR.fromZone(zone))
+  return return_array
+  
+def answer_rr_list(zones:list[str])->list[RR]:
+  return_array = []
+  for zone in zones:
+    return_array.extend(RR.fromZone(zone))
+  return return_array
+
+def answer_recode(record:DNSRecord, my_dict:dict)->DNSRecord:
+  record.add_auth(*auth_rr_list(my_dict["s_o_as"]))
+  record.add_answer(*answer_rr_list(my_dict["zones"]))
+  return record

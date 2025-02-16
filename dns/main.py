@@ -1,5 +1,4 @@
 from threading import Thread
-import socket
 
 from my_modules import run_tcp, run_udp
 

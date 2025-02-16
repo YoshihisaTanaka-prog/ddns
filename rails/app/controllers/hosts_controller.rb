@@ -74,6 +74,7 @@ class HostsController < ApplicationController
     end
 
     def updating_host_params
-      params.expect(host: [:hostname, :ipv4, :ttl])
+      p = params.require(:host).permit(:hostname, :ipv4, :ttl)
+      return {hostname: p[:hostname], ipv4: p[:ipv4], time_limit: Time.current + p[:ttl].seconds}
     end
 end

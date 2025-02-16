@@ -1,6 +1,6 @@
-class CreateSOAs < ActiveRecord::Migration[8.0]
+class CreateSoas < ActiveRecord::Migration[8.0]
   def change
-    create_table :s_o_as do |t|
+    create_table :soas do |t|
       t.string :primary
       t.string :admin
       t.string :value
