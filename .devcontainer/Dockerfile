@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/ruby:1-3.3-bookworm
+FROM mcr.microsoft.com/devcontainers/ruby:3.3-bookworm
 
 RUN apt-get update && apt-get install -y dnsutils
 # Install Rails

@@ -10,7 +10,6 @@ class QuestionsController < ApplicationController
         @s_o_as.select do |s_o_a|
           s_o_a.time_limit < now
         end.each do |s_o_a|
-          s_o_a.destroy!
           @invalid_count = @invalid_count + 1
         end
         @zones.select do |zone|

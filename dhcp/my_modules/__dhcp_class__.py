@@ -18,35 +18,38 @@ def from_ip(ip_address: str) -> bytes:
 class MyDHCPOptions(dict[int, bytes]):
   def __init__(self, data: bytes):
     super().__init__()
-    self.set(1, from_ip(SUBNET_MASK))
-    self.set(6, from_ip(ROUTER_IP))
+    self[1] = from_ip(SUBNET_MASK)
+    self[3] = from_ip(ROUTER_IP)
+    self[6] = from_ip(ROUTER_IP)
     if DOMAIN_SUFFIX != None:
-      self.set(15, DOMAIN_SUFFIX.encode())
-    self.set(53, data[2].to_bytes(1))
-    self.set(66, from_ip(ROUTER_IP))
+      self[15] = DOMAIN_SUFFIX.encode()
+    self[53] = data[2:3]
+    self[66] = from_ip(ROUTER_IP)
     index = 3
     code = data[index]
     while code != 255:
       length = data[index+1]
-      if code not in (1, 6, 15, 53, 55, 66):
-        value = data[index+2:index+length+2]
-        self.set(code, value)
+      if code not in (1, 3, 6, 15, 53, 55, 66):
+        self[code] = data[index+2:index+length+2]
       index += length+2
       code = data[index]
 
-  def set(self, code: int, value: bytes|bytearray|str):
-    if code > 0 and code < 256 and code not in (1, 6, 15, 53, 55, 66):
-      if isinstance(value, str):
-        self[code] = value.encode()
-      elif isinstance(value, bytes):
-        self[code] = value
-      else:
-        self[code] = bytes(value)
+  def set(self, code: int, value:bytes|bytearray|str|None=None):
+    if code > 0 and code < 256 and code not in (1, 3, 6, 15, 53, 55, 66):
+      if value == None:
+        self[code] = None
+      elif code not in (61):
+        if isinstance(value, str):
+          self[code] = value.encode()
+        elif isinstance(value, bytes):
+          self[code] = value
+        else:
+          self[code] = bytes(value)
         
   def to_bytes(self) -> bytes:
     return_value = bytearray([53,1,self[53][0]])
     for code in range(1, 255):
-      if code == 53:
+      if code in (53, 55):
         continue
       value = self.get(code)
       if value != None:
@@ -65,10 +68,8 @@ class MyDHCP:
     if (DOMAIN_SUFFIX != "") and (HOST_NAME != ""):
       self.server_name = f"{HOST_NAME}.{DOMAIN_SUFFIX}"
     self.options = MyDHCPOptions(data[240:])
-    dic = self.__dict__
-    print(dic)
     
-  def set_option(self, code: int, value: bytes|bytearray|str) -> MyDHCP:
+  def set_option(self, code: int, value: bytes|bytearray|str):
     self.options.set(code, value)
     return self
   
