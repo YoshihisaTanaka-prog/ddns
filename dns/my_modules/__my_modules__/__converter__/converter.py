@@ -22,8 +22,6 @@ for i in range(4):
         LOCAL_PTR_LABELS.append(DNSLabel([str(j).encode()] + LOCAL_PTR_LABEL_BASE))
     break
 
-DNSQuestion()
-
 class MyQuestion:
   def __init__(self, h:DNSHeader, q:DNSQuestion, new_label, is_local:bool):
     self.q = q
@@ -51,19 +49,21 @@ def request(data) -> MyQuestion:
         return MyQuestion.get_local(label, header, question)
     return MyQuestion.get_global(header, question)
   else:
-    insert_label = []
-    search_label = copy(LOCAL_DOMAIN_SUFFIX)
-    while(len(search_label) > 0):
-      if label.matchSuffix(search_label):
-        new_label = DNSLabel(list(label.label)[:-len(search_label)] + insert_label + search_label)
-        return MyQuestion.get_local(new_label, header, question)
-      insert_label.append(search_label[0])
-      search_label = search_label[1:]
-    return MyQuestion.get_global(header, question)
+    if label.matchSuffix("search.local"):
+      return MyQuestion.get_global(header, question)
+    else:
+      insert_label = []
+      search_label = copy(LOCAL_DOMAIN_SUFFIX)
+      while(len(search_label) > 0):
+        if label.matchSuffix(search_label):
+          new_label = DNSLabel(list(label.label)[:-len(search_label)] + insert_label + search_label)
+          return MyQuestion.get_local(new_label, header, question)
+        insert_label.append(search_label[0])
+        search_label = search_label[1:]
+      return MyQuestion.get_global(header, question)
   
-def auth_rr(my_dict:dict, domain_label:DNSLabel=DNSLabel(LOCAL_DOMAIN_SUFFIX))->RR:
+def auth_rr(my_dict:dict, domain_label:DNSLabel=DNSLabel(LOCAL_DOMAIN_SUFFIX))->list[RR]:
   zone = f"{domain_label} {my_dict["minimum"]} IN SOA {my_dict['primary']} {my_dict['admin']} {my_dict['serial']} {my_dict['refresh']} {my_dict['retry']} {my_dict['expire']} {my_dict['minimum']}"
-  print(zone)
   return RR.fromZone(zone)
 
 def get_cache_params(question: DNSQuestion)->dict:
@@ -82,14 +82,12 @@ def set_auth_params(auth_list:list[RR])->dict:
     item_dict["value"] = auth.toZone()
     item_dict["ttl"] = auth.ttl
     return_list.append(item_dict)
-  print("auth", return_list)
   return return_list
 
 def set_answer_params(answer_list:list[RR])->dict:
   return_list = []
   for answer in answer_list:
     return_list.append({"value": f" {answer.ttl} ".join(answer.toZone().split(f" {answer.ttl} ")[1:]), "ttl": answer.ttl})
-  print("answer", return_list)
   return return_list
 
 def set_cache_params(recode: DNSRecord)->dict:

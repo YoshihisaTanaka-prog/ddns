@@ -24,14 +24,14 @@ services:
     volumes:
       - ./dhcp:/app
       - ./.docker/.root/dhcp:/root
-    ports:
-      - "0.0.0.0:67:67/udp"
+    network_mode: "host"
     user: root
     command: /app/run.sh
     environment:
       ROUTER_IP: ${ROUTER_INNER_IP}
       HOST_NAME: ${ROUTER_HOST_NAME}
       DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
+      SOA_DATA: ${LOCAL_SOA}
       NETWORK_IP: ${NETWORK_IP}
       SUBNET_MASK: ${SUBNET_MASK}
     depends_on:
@@ -42,6 +42,8 @@ services:
     volumes:
       - ./rails:/app
       - ./.docker/.root/rails:/root
+    ports:
+      - "127.0.0.1:3000:3000"
     user: root
     command: /app/run.sh
     depends_on:
@@ -55,12 +57,12 @@ services:
 
   db:
     image: postgres:15
+    volumes:
+      - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - db_data:/var/lib/postgresql/data
 
 volumes:
   db_data:

@@ -1,5 +1,6 @@
 from . import __converter__ as converter
-from . import __search__ as search
 from . import __db__ as db
+from .__search__ import searcher
+from .__my_exit__ import add_before_tasks, exit
 
-__all__ = ["converter", "db", "search"]
+__all__ = ["add_before_tasks", "converter", "db", "exit", "searcher"]

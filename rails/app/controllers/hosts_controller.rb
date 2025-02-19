@@ -23,8 +23,6 @@ class HostsController < ApplicationController
       host = Host.find_by(hostname: params[:hostname])
       if host.nil?
         render json: nil
-      elsif host.time_limit < Time.current
-        render json: nil
       else
         render json: host.ip_address.to_json
       end
@@ -38,11 +36,11 @@ class HostsController < ApplicationController
       host = Host.find_by(ip_address: params.dig(:host, :ip_address))
       logger.info host
       if host.nil?
-        render json: false
+        render json: nil
       elsif host.time_limit < Time.current
-        render json: false
+        render json: nil
       else
-        render json: true
+        render json: host.client_info
       end
     end
   end
@@ -60,6 +58,7 @@ class HostsController < ApplicationController
 
   def create_update
     hp = updating_host_params
+    logger.info hp
     @is_creating = false
     @host = Host.find_or_create_by(searching_host_params) do |host|
       host.hostname = hp[:hostname]
@@ -82,11 +81,14 @@ class HostsController < ApplicationController
     @host = Host.find_by(searching_host_params)
     if @host.nil?
       render json: {}, status: 200
-    elsif @host.destroy
-      self.update_settings({serial: true})
-      render json: {}, status: 200
     else
-      render json: @host.errors, status: :unprocessable_entity
+      @host.time_limit = Time.current
+      if @host.save
+        self.update_settings({serial: true})
+        render json: {}, status: 200
+      else
+        render json: @host.errors, status: :unprocessable_entity
+      end
     end
   end
 

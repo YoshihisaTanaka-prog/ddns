@@ -1,7 +1,7 @@
 class CreateHosts < ActiveRecord::Migration[8.0]
   def change
     create_table :hosts do |t|
-      t.string :hostname, null: false
+      t.string :hostname
       t.string :mac_address, null: false
       t.string :client_id
       t.string :ip_address, null: false
@@ -10,8 +10,7 @@ class CreateHosts < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :hosts, :hostname, unique: true
-    add_index :hosts, :mac_address, unique: true
+    add_index :hosts, [:mac_address, :client_id], unique: true
     add_index :hosts, :ip_address, unique: true
   end
 end
