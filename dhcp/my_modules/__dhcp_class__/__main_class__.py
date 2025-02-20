@@ -151,10 +151,15 @@ class MyDHCP:
   
   def get_requested_data(self):
     op81 = self.get_option(81)
+    allow_nums = [45, 46, 95] + [num for num in range(48, 58)] + [num for num in range(65, 91)] + [num for num in range(97, 123)]
     if op81 == None:
-      return RequestData.from_bytes(self.get_option(12), self.your_ip, self.get_option(51))
+      op12 = self.get_option(12)
+      if op12 == None:
+        return RequestData.from_bytes(None, self.your_ip, self.get_option(51))
+      else:
+        host_name = bytes([num for num in op12 if num in allow_nums])
+        return RequestData.from_bytes(host_name, self.your_ip, self.get_option(51))
     else:
-      allow_nums = [45, 46, 95] + [num for num in range(48, 58)] + [num for num in range(65, 91)] + [num for num in range(97, 123)]
       host_name = bytes([num for num in op81 if num in allow_nums])
       return RequestData.from_bytes(host_name, self.your_ip, self.get_option(51))
     

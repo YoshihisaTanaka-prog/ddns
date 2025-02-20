@@ -9,7 +9,8 @@ Rails.application.routes.draw do
 
   post "dhcp/search-from-client-data", to: "hosts#search_dhcp"
   post "dhcp/search-from-ip", to: "hosts#search_dhcp_ip"
-  post "dhcp/set", to: "hosts#create_update"
+  post "dhcp/set-ipv4", to: "hosts#create_update_v4"
+  post "dhcp/set-ipv6", to: "hosts#create_update_v6"
   post "dhcp/erase", to: "hosts#destroy"
 
   post "dns/search-host", to: "hosts#search_dns_host"

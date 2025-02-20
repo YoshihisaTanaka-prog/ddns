@@ -6,7 +6,9 @@ __pycache__
 /rails/routes.txt
 /rails/get-routes.sh
 
-
+/docker-router.service
+/.common/setting.json
+/.common/log/*.log
 .env
 node_modules
 
@@ -19,6 +21,7 @@ node_modules
 /rails/.bundle/cache
 /rails/vendor/bundle
 /rails/db/schema.rb
+/rails/db/seeds.rb
 
 # Ignore all logfiles and tempfiles.
 /rails/log/*

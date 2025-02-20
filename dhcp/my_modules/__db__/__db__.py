@@ -15,15 +15,14 @@ def post(path, json:dict|None=None):
 def erase_data(client_data:ClientData):
   post("erase", client_data.__dict__)
 
-def search_data(arg:ClientData|str)->dict|str|None:
+def search_data(arg:ClientData|str)->dict:
   """
   When type(arg) == str, the value must be IPv4.
   In this case, the type of the return value will be dict|None.
   If the input Ipv4 address exists in database, the return value will be the client infomation dict, and if not so, the return value will be None.
   
   When type(arg) == ClientData,
-  if such a device exists, the return value will be the IPv4 address of the device that has the input client data,
-  otherwise the return value will be None.
+  if such a device exists in db, the return value will be the IPv4 and IPv6 address of the device that has the input client data,
   """
   if isinstance(arg, ClientData):
     return post("search-from-client-data", arg.__dict__)
@@ -33,5 +32,5 @@ def search_data(arg:ClientData|str)->dict|str|None:
 def set_data(client_data:ClientData, request_data:RequestData):
   if request_data.ip_address == None:
     raise TypeError("Value of request_data.ip_address is requiered")
-  post("set", {**client_data.__dict__, **request_data.__dict__})
+  post("set-ipv4", {**client_data.__dict__, **request_data.__dict__})
   print(f"db.set_data()\n  {client_data}\n  {request_data}")

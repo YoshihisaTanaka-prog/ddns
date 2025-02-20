@@ -87,7 +87,8 @@ def set_auth_params(auth_list:list[RR])->dict:
 def set_answer_params(answer_list:list[RR])->dict:
   return_list = []
   for answer in answer_list:
-    return_list.append({"value": f" {answer.ttl} ".join(answer.toZone().split(f" {answer.ttl} ")[1:]), "ttl": answer.ttl})
+    splitted_zone = [item for item in answer.toZone().split(f" ") if item != ""]
+    return_list.append({"value1": splitted_zone[0], "value2": f" ".join(splitted_zone[2:]), "ttl": answer.ttl})
   return return_list
 
 def set_cache_params(recode: DNSRecord)->dict:
@@ -110,9 +111,11 @@ def auth_rr_list(zones:list[str])->list[RR]:
   
 def answer_rr_list(zones:list[str])->list[RR]:
   return_array = []
-  for zone in zones:
-    return_array.extend(RR.fromZone(zone))
-  return return_array
+  try:
+    for zone in zones:
+      return_array.extend(RR.fromZone(zone))
+  finally:
+    return return_array
 
 def answer_recode(record:DNSRecord, my_dict:dict)->DNSRecord:
   record.add_auth(*auth_rr_list(my_dict["s_o_as"]))

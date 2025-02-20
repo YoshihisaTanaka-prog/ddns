@@ -1,7 +1,8 @@
 class Zone < ApplicationRecord
   belongs_to :question
 
-  def output_format(domain)
-    "#{domain} #{(self.time_limit - Time.now).to_i} #{self.value}"
+  def output_format
+    ttl = (self.time_limit - Time.current).floor
+    "#{self.value1} #{ttl} #{self.value2}"
   end
 end

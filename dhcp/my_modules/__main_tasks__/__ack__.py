@@ -18,7 +18,7 @@ def ack_for_request(sent_data:bytes) -> bytes:
       else:
         if client_data.is_mutch(saved_client_data):
           dhcp_data.your_ip = requested_ip
-          if saved_client_data["ip_address"] == requested_ip:
+          if saved_client_data["ip_v4"] == requested_ip:
             print("Condition 2-2-1-1 sent client data was mutched with data in db")
             return dhcp_data.save().set_mode(5).to_bytes()
           else:

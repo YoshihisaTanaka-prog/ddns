@@ -5,6 +5,8 @@ from my_modules import MyDHCP, ack_for_inform, ack_for_request, offer, release
 
 threads:list[Thread]=[]
 
+# 2001:a7ff:ff47:101::1
+
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
   def send(data:bytes):
     server.sendto(data, ("255.255.255.255", 68))

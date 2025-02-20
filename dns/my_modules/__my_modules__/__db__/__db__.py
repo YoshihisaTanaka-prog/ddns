@@ -13,9 +13,9 @@ def post(path, json:dict|None=None):
     return response.json()
   else:
     try:
-      sent_exception = response.json()["exception"]
-      raise BaseException(f"\nstatus {response.status_code}\n{sent_exception}")
-    except:
+      sent_exception = response.json()
+      raise BaseException(f"\nstatus {response.status_code}\nsent_message: {sent_exception}")
+    finally:
       exit()
 
 def get_my_soa_dict() -> dict:
@@ -52,17 +52,27 @@ def search_local(header, question, new_domain_label: DNSLabel) -> DNSRecord:
       else:
         host_name = ".".join(host_names)
     response = post("search-ip", {"hostname": host_name})
-    if response == None:
-      record.header.set_rcode(3)
-    elif question.qtype == 6:
+    if question.qtype == 6:
       zone = f"{host_name}.{LOCAL_DOMAIN_SUFFIX} {my_soa_dic["minimum"]}"
       record.add_answer(*RR.fromZone(zone))
-    elif question.qtype in (28, 65):
+    elif question.qtype == 28:
+      if response["ip_v6"] == None:
+        record.header.set_rcode(3)
+      else:
+        zone = f"{host_name}.{LOCAL_DOMAIN_SUFFIX} {my_soa_dic["minimum"]} {CLASS.forward[question.qclass]} AAAA {response["ip_v6"]}"
+        print("searched local:", zone)
+        record.add_answer(*RR.fromZone(zone))
+    elif response["ip_v4"] == None:
       record.header.set_rcode(3)
     else:
-      zone = f"{host_name}.{LOCAL_DOMAIN_SUFFIX} {my_soa_dic["minimum"]} {CLASS.forward[question.qclass]} {QTYPE.forward[question.qtype]} {response}"
-      print(zone)
-      record.add_answer(*RR.fromZone(zone))
+      if question.qtype == 65:
+        zone = f"{host_name}.{LOCAL_DOMAIN_SUFFIX} {my_soa_dic["minimum"]} {CLASS.forward[question.qclass]} A {response["ip_v4"]}"
+        print("searched local:", zone)
+        record.add_answer(*RR.fromZone(zone))
+      else:
+        zone = f"{host_name}.{LOCAL_DOMAIN_SUFFIX} {my_soa_dic["minimum"]} {CLASS.forward[question.qclass]} {QTYPE.forward[question.qtype]} {response["ip_v4"]}"
+        print("searched local:", zone)
+        record.add_answer(*RR.fromZone(zone))
   return record
 
 def search_cache(header, question:DNSQuestion) -> DNSRecord|None:

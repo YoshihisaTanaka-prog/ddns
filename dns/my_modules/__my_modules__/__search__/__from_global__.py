@@ -1,7 +1,6 @@
 import struct, socket
+from traceback import print_exc
 from dnslib import DNSRecord
-
-from my_modules.__my_modules__.__my_exit__ import add_before_tasks, exit
 
 def from_global(header, question, callback, server_socket, addr):
   client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,5 +15,5 @@ def from_global(header, question, callback, server_socket, addr):
     callback(DNSRecord.parse(response[2:]), server_socket, addr)
     client.close()
   except:
-    add_before_tasks(client.close)
-    exit()
+    print_exc(15)
+    client.close()
