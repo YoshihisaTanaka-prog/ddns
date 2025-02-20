@@ -3,7 +3,7 @@ services:
     build: ./.docker/dns
     volumes:
       - ./dns:/app
-      - ./.docker/.root/dns:/root
+      - ./.common:/app/.common
     ports:
       - "0.0.0.0:53:53/tcp"
       - "0.0.0.0:53:53/udp"
@@ -18,30 +18,47 @@ services:
       SUBNET_MASK: ${SUBNET_MASK}
     depends_on:
       - rails
+    restart: always
 
   dhcp:
     build: ./.docker/dhcp
     volumes:
       - ./dhcp:/app
-      - ./.docker/.root/dhcp:/root
-    ports:
-      - "0.0.0.0:67:67/udp"
+      - ./.common:/app/.common
+    network_mode: "host"
     user: root
     command: /app/run.sh
     environment:
       ROUTER_IP: ${ROUTER_INNER_IP}
       HOST_NAME: ${ROUTER_HOST_NAME}
       DOMAIN_SUFFIX: ${LOCAL_DOMAIN_SUFFIX}
+      SOA_DATA: ${LOCAL_SOA}
       NETWORK_IP: ${NETWORK_IP}
       SUBNET_MASK: ${SUBNET_MASK}
     depends_on:
       - rails
+    restart: always
+
+  web:
+    build: ./.docker/web
+    volumes:
+      - ./web:/app
+      - ./.common:/app/.common
+    ports:
+      - "0.0.0.0:80:8000"
+    user: root
+    command: /app/run.sh
+    depends_on:
+      - rails
+    restart: always
 
   rails:
     build: ./.docker/rails
     volumes:
       - ./rails:/app
-      - ./.docker/.root/rails:/root
+      - ./.common:/app/.common
+    ports:
+      - "127.0.0.1:3000:3000"
     user: root
     command: /app/run.sh
     depends_on:
@@ -52,15 +69,17 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+    restart: always
 
   db:
     image: postgres:15
+    volumes:
+      - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - db_data:/var/lib/postgresql/data
+    restart: always
 
 volumes:
   db_data:

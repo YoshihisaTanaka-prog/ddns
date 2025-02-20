@@ -20,6 +20,8 @@ services:
       - ../.devcontainer:/workspaces/ddns/.devcontainer:cached
       - ../.docker/.root/app:/home/vscode
     command: sleep infinity
+    ports:
+      - "2222:22"
     environment:
       RAILS_ENV: development
       DB_USER: ${DB_USER}

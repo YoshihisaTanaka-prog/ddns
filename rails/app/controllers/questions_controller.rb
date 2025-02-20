@@ -1,22 +1,20 @@
 class QuestionsController < ApplicationController
   def search
+    @now = Time.current
     ApplicationRecord.transaction do
       @question = Question.find_by(question_params)
       unless @question.nil?
         @s_o_as = @question.soas
         @zones = @question.zones
-        now = Time.current
         @invalid_count = 0
         @s_o_as.select do |s_o_a|
-          s_o_a.time_limit < now
+          s_o_a.time_limit < @now
         end.each do |s_o_a|
-          s_o_a.destroy!
           @invalid_count = @invalid_count + 1
         end
         @zones.select do |zone|
-          zone.time_limit < now
+          zone.time_limit < @now
         end.each do |zone|
-          zone.destroy!
           @invalid_count = @invalid_count + 1
         end
       end
@@ -28,7 +26,7 @@ class QuestionsController < ApplicationController
         render json: nil
       else
         zones = @zones.map do |z|
-          z.output_format(@question.domain)
+          z.output_format
         end
         s_o_as = @s_o_as.map do |s|
           s.value
@@ -38,7 +36,7 @@ class QuestionsController < ApplicationController
     else
       render json: nil
     end
-  rescue ApplicationRecord::RecordInvalid => e
+  rescue => e
     render json: { error: e.message }, status: 500
   end
 
@@ -48,21 +46,38 @@ class QuestionsController < ApplicationController
       qp = question_params
       @question = Question.find_or_create_by(question_params)
       now = Time.current
+      soa_ids = []
       s_o_as_params.each do |s|
-        @question.soas.find_or_create_by(primary: s[:primary], admin: s[:admin]) do |soa|
-          soa.value = s[:value]
-          soa.time_limit = now + s[:ttl].seconds
+        soa = @question.soas.find_or_initialize_by(primary: s[:primary], admin: s[:admin])
+        soa.value =  s[:value]
+        soa.time_limit = now + s[:ttl].seconds
+        soa.save
+        soa_ids << soa.id
+      end
+      @question.soas.each do |s|
+        unless soa_ids.include?(s.id)
+          qsr = QuestionSoaRelation.find_by(question_id: @question.id, soa_id: s.id)
+          unless qsr.nil?
+            qsr.delete
+          end
         end
       end
+      zone_ids = []
       zones_params.each do |z|
-        @question.zones.find_or_create_by(value: z[:value]) do |zone|
-          zone.time_limit = now + z[:ttl].seconds
+        zone = @question.zones.find_or_initialize_by(value1: z[:value1], value2: z[:value2])
+        zone.time_limit = now + z[:ttl].seconds
+        zone.save
+        zone_ids << zone.id
+      end
+      @question.zones.each do |z|
+        unless zone_ids.include?(z.id)
+          z.delete
         end
       end
     end
     render json: {}, status: 200
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { error: e.message }, status: 422
+  rescue => e
+    render json: { error: e.message }, status: 500
   end
 
   private
@@ -95,7 +110,7 @@ class QuestionsController < ApplicationController
           []
         else
           params[:zones].map.with_index do |z, index|
-            z.permit(:value, :ttl)
+            z.permit(:value1, :value2, :ttl)
           end
         end
       else

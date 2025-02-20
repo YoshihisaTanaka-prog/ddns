@@ -1,3 +1,3 @@
-from .search import from_global
+from .__main_class__ import searcher
 
-__all__ = ['from_global']
+__all__ = ['searcher']
